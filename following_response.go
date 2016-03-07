@@ -1,6 +1,7 @@
 package gotumblr
 
+// FollowingResponse holds information about the blogs a user follows
 type FollowingResponse struct {
-	Total_blogs int64
-	Blogs       []FollowedBlog
+	TotalBlogs int64
+	Blogs      []FollowedBlog
 }

@@ -2,7 +2,8 @@ package gotumblr
 
 import "encoding/json"
 
+// LikesResponse holds information about the posts a user liked on Tumblr
 type LikesResponse struct {
-	Liked_posts []json.RawMessage
-	Liked_count int64
+	LikedPosts []json.RawMessage
+	LikedCount int64
 }

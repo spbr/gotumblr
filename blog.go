@@ -1,13 +1,14 @@
 package gotumblr
 
+// BlogInfo holds information about a Tumblr blog
 type BlogInfo struct {
 	Title       string
 	Posts       int64
 	Name        string
-	Url         string
+	URL         string
 	Updated     int64
 	Description string
 	Ask         bool
-	Ask_anon    bool
+	AskAnon     bool
 	Likes       int64
 }

@@ -1,8 +1,9 @@
 package gotumblr
 
+// OwnedBlog contains the information about a blog the user owns
 type OwnedBlog struct {
 	Name      string
-	Url       string
+	URL       string
 	Title     string
 	Primary   bool
 	Followers int64

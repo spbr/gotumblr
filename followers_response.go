@@ -1,6 +1,7 @@
 package gotumblr
 
+// FollowersResponse holds information about the users that follow a Tumblr blog
 type FollowersResponse struct {
-	Total_users int64
-	Users       []User
+	TotalUsers int64
+	Users      []User
 }

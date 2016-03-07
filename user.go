@@ -1,8 +1,9 @@
 package gotumblr
 
+//UserInfo holds the tumbler user data
 type User struct {
 	Name      string
 	Following bool
-	Url       string
+	URL       string
 	Updated   int64
 }

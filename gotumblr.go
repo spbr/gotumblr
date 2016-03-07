@@ -10,73 +10,85 @@ import (
 	"net/http"
 )
 
-//defines a Go Client for the Tumblr API.
+//TumblrRestClient defines a Go Client for the Tumblr API.
 type TumblrRestClient struct {
 	request *TumblrRequest
 }
 
-//Initializes the TumblrRestClient, creating TumblrRequest that deals with all request formatting.
+//NewTumblrRestClient initializes the TumblrRestClient, creating TumblrRequest that deals with all request formatting.
 //consumerKey is the consumer key of your Tumblr Application.
 //consumerSecret is the consumer secret of your Tumblr Application.
 //oauthToken is the user specific token, received from the /access_token endpoint.
 //oauthSecret is the user specific secret, received from the /access_token endpoint.
 //host is the host that you are tryng to send information to (e.g. http://api.tumblr.com).
-func NewTumblrRestClient(consumerKey, consumerSecret, oauthToken, oauthSecret, callbackUrl, host string) *TumblrRestClient {
-	return &TumblrRestClient{NewTumblrRequest(consumerKey, consumerSecret, oauthToken, oauthSecret, callbackUrl, host)}
+func NewTumblrRestClient(consumerKey, consumerSecret, oauthToken, oauthSecret, callbackURL, host string) *TumblrRestClient {
+	return &TumblrRestClient{NewTumblrRequest(consumerKey, consumerSecret, oauthToken, oauthSecret, callbackURL, host)}
 }
 
-//Gets the user information.
-func (trc *TumblrRestClient) Info() UserInfoResponse {
-	data := trc.request.Get("/v2/user/info", map[string]string{})
+//Info retrieves the user information.
+func (trc *TumblrRestClient) Info() (*UserInfoResponse, error) {
+	data, err := trc.request.Get("/v2/user/info", map[string]string{})
+	if err != nil {
+		return nil, err
+	}
 	var result UserInfoResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Retrieves the url of the blog's avatar.
+//Avatar etrieves the url of the blog's avatar.
 //size can be: 16, 24, 30, 40, 48, 64, 96, 128 or 512.
-func (trc *TumblrRestClient) Avatar(blogname string, size int) AvatarResponse {
-	requestUrl := trc.request.host + fmt.Sprintf("/v2/blog/%s/avatar/%d", blogname, size)
-	httpRequest, err := http.NewRequest("GET", requestUrl, nil)
+func (trc *TumblrRestClient) Avatar(blogname string, size int) (*AvatarResponse, error) {
+	requestURL := trc.request.host + fmt.Sprintf("/v2/blog/%s/avatar/%d", blogname, size)
+	httpRequest, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	transport := &http.Transport{}
-	httpResponse, err2 := transport.RoundTrip(httpRequest)
-	if err2 != nil {
-		fmt.Println(err2)
+	httpResponse, err := transport.RoundTrip(httpRequest)
+	if err != nil {
+		return nil, err
 	}
 	defer httpResponse.Body.Close()
-	body, err3 := ioutil.ReadAll(httpResponse.Body)
-	if err3 != nil {
-		fmt.Println(err3)
+	body, err := ioutil.ReadAll(httpResponse.Body)
+	if err != nil {
+		return nil, err
 	}
-	data := trc.request.JSONParse(body)
+	data, err := trc.request.JSONParse(body)
+	if err != nil {
+		return nil, err
+	}
 	var result AvatarResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets the likes of the given user.
+//Likes retrieves the likes of the given user.
 //options can be:
 //limit: the number of results to return, inclusive;
 //offset: liked post number to start at.
-func (trc *TumblrRestClient) Likes(options map[string]string) LikesResponse {
-	data := trc.request.Get("/v2/user/likes", options)
+func (trc *TumblrRestClient) Likes(options map[string]string) (*LikesResponse, error) {
+	data, err := trc.request.Get("/v2/user/likes", options)
+	if err != nil {
+		return nil, err
+	}
 	var result LikesResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets the blogs that the user is following.
+//Following retrieves the blogs that the user is following.
 //options can be:
 //limit: the number of results to return;
 //offset: result number to start at.
-func (trc *TumblrRestClient) Following(options map[string]string) FollowingResponse {
-	data := trc.request.Get("/v2/user/following", options)
+func (trc *TumblrRestClient) Following(options map[string]string) (*FollowingResponse, error) {
+	data, err := trc.request.Get("/v2/user/following", options)
+	if err != nil {
+		return nil, err
+	}
 	var result FollowingResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
 //Gets the dashboard of the user.

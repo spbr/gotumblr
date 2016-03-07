@@ -11,7 +11,7 @@ A Go [Tumblr API](http://www.tumblr.com/docs/en/api/v2) v2 Client.
 Install gotumblr
 ----------------
 
-In terminal write `go get github.com/MariaTerzieva/gotumblr`
+In terminal write `go get github.com/spbr/gotumblr`
 
 Running the tests
 -----------------
@@ -23,7 +23,7 @@ Using the package
 
 To use this package in your projects do this (after install):
 
-`import "github.com/MariaTerzieva/gotumblr"`
+`import "github.com/spbr/gotumblr"`
 
 You are going to need a consumer key, consumer secret, callback URL, token and token secret.
 You can get the consumer key, consumer secret and callback URL by registering a Tumblr application.
