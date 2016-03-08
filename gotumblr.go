@@ -279,30 +279,36 @@ func (trc *TumblrRestClient) Unfollow(blogname string) (bool, error) {
 //Like post of a given blog.
 //id: the id of the post you want to like.
 //reblog_key: the reblog key for the post id.
-func (trc *TumblrRestClient) Like(id, reblogKey string) error {
-	requestUrl := fmt.Sprintf("/v2/user/like")
+func (trc *TumblrRestClient) Like(id, reblogKey string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/user/like")
 	params := map[string]string{"id": id, "reblog_key": reblogKey}
-	data := trc.request.Post(requestUrl, params)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, params)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
 //Unlike a post of a given blog.
 //id: the id of the post you want to unlike.
 //reblog_key: the reblog key for the post id.
-func (trc *TumblrRestClient) Unlike(id, reblogKey string) error {
-	requestUrl := fmt.Sprintf("/v2/user/unlike")
+func (trc *TumblrRestClient) Unlike(id, reblogKey string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/user/unlike")
 	params := map[string]string{"id": id, "reblog_key": reblogKey}
-	data := trc.request.Post(requestUrl, params)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, params)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a photo post or photoset on a blog.
+//CreatePhoto creates a photo post or photoset on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -316,17 +322,20 @@ func (trc *TumblrRestClient) Unlike(id, reblogKey string) error {
 //caption: the caption that you want applied to the photo;
 //link: the 'click-through' url for the photo;
 //*source: the photo source url.
-func (trc *TumblrRestClient) CreatePhoto(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreatePhoto(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "photo"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a text post on a blog.
+//CreateText creates a text post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -339,17 +348,20 @@ func (trc *TumblrRestClient) CreatePhoto(blogname string, options map[string]str
 //slug: add a short text summary to the end of the post url;
 //title: the optional title of the post;
 //*body: the full text body.
-func (trc *TumblrRestClient) CreateText(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateText(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "text"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a quote post on a blog.
+//CreateQuote creates a quote post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -362,17 +374,20 @@ func (trc *TumblrRestClient) CreateText(blogname string, options map[string]stri
 //slug: add a short text summary to the end of the post url;
 //*quote: the full text of the quote;
 //source: the cited source of the quote.
-func (trc *TumblrRestClient) CreateQuote(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateQuote(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "quote"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a link post on a blog.
+//CreateLink creates a link post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -386,17 +401,20 @@ func (trc *TumblrRestClient) CreateQuote(blogname string, options map[string]str
 //title: the title of the page the link points to;
 //*url: the link you are posting;
 //description: the description of the link you are posting.
-func (trc *TumblrRestClient) CreateLink(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateLink(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "link"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a chat post on a blog.
+//CreateChatPost creates a chat post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -409,17 +427,20 @@ func (trc *TumblrRestClient) CreateLink(blogname string, options map[string]stri
 //slug: add a short text summary to the end of the post url;
 //title: the title of the chat;
 //*conversation: the text of the conversation/chat, with dialogue labels.
-func (trc *TumblrRestClient) CreateChatPost(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateChatPost(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "chat"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create an audio post on a blog.
+//CreateAudio creates an audio post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -432,17 +453,20 @@ func (trc *TumblrRestClient) CreateChatPost(blogname string, options map[string]
 //slug: add a short text summary to the end of the post url;
 //caption: the caption of the post;
 //*external_url: the url of the site that hosts the audio file.
-func (trc *TumblrRestClient) CreateAudio(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateAudio(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "audio"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Create a video post on a blog.
+//CreateVideo creates a video post on a blog.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -455,45 +479,54 @@ func (trc *TumblrRestClient) CreateAudio(blogname string, options map[string]str
 //slug: add a short text summary to the end of the post url;
 //caption: the caption for the post;
 //*embed: the html embed code for the video.
-func (trc *TumblrRestClient) CreateVideo(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post", blogname)
+func (trc *TumblrRestClient) CreateVideo(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post", blogname)
 	options["type"] = "video"
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Creates a reblog on the given blog.
+//Reblog creates a reblog on the given blog.
 //blogname: the url of the blog you want to reblog to.
 //options should be:
 //(with * are marked required options)
 //*id: the id of the reblogged post;
 //*reblog_key: the reblog key of the rebloged post.
-func (trc *TumblrRestClient) Reblog(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post/reblog", blogname)
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 201 {
-		return errors.New(data.Meta.Msg)
+func (trc *TumblrRestClient) Reblog(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post/reblog", blogname)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 201 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Deletes a post with a given id.
+//DeletePost deletes a post with a given id.
 //blogname: the url of the blog you want to delete from.
 //id: the id of the post you want to delete.
-func (trc *TumblrRestClient) DeletePost(blogname, id string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post/delete", blogname)
+func (trc *TumblrRestClient) DeletePost(blogname, id string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post/delete", blogname)
 	params := map[string]string{"id": id}
-	data := trc.request.Post(requestUrl, params)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, params)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Edits a post with a given id.
+//EditPost edits a post with a given id.
 //blogname: the url of the blog you want to post to.
 //options can be:
 //(with * are marked required options)
@@ -505,11 +538,14 @@ func (trc *TumblrRestClient) DeletePost(blogname, id string) error {
 //slug: add a short text summary to the end of the post url;
 //*id: the id of the post.
 //The other options are specific to the type of post you want to edit.
-func (trc *TumblrRestClient) EditPost(blogname string, options map[string]string) error {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/post/edit", blogname)
-	data := trc.request.Post(requestUrl, options)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+func (trc *TumblrRestClient) EditPost(blogname string, options map[string]string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/post/edit", blogname)
+	data, err := trc.request.Post(requestURL, options)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
