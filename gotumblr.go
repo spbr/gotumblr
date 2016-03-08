@@ -91,7 +91,7 @@ func (trc *TumblrRestClient) Following(options map[string]string) (*FollowingRes
 	return &result, nil
 }
 
-//Gets the dashboard of the user.
+//Dashboard retrieve the dashboard of the user.
 //options can be:
 //limit: number of results to return;
 //offset: post number to start at;
@@ -99,29 +99,35 @@ func (trc *TumblrRestClient) Following(options map[string]string) (*FollowingRes
 //since_id: return posts that have apeared after this id;
 //reblog_info: whether to return reblog information about the posts;
 //notes_info: whether to return notes information about the posts.
-func (trc *TumblrRestClient) Dashboard(options map[string]string) DraftsResponse {
-	data := trc.request.Get("/v2/user/dashboard", options)
+func (trc *TumblrRestClient) Dashboard(options map[string]string) (*DraftsResponse, error) {
+	data, err := trc.request.Get("/v2/user/dashboard", options)
+	if err != nil {
+		return nil, err
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets a list of posts with the given tag.
+//Tagged retrieves a list of posts with the given tag.
 //tag: the tag you want to look for.
 //options can be:
 //before: the timestamp of when you'd like to see posts before;
 //limit: the number of results to return;
 //filter: the post format you want to get(e.g html, text, raw).
-func (trc *TumblrRestClient) Tagged(tag string, options map[string]string) []json.RawMessage {
+func (trc *TumblrRestClient) Tagged(tag string, options map[string]string) ([]json.RawMessage, error) {
 	options["tag"] = tag
 	options["api_key"] = trc.request.apiKey
-	data := trc.request.Get("/v2/tagged", options)
+	data, err := trc.request.Get("/v2/tagged", options)
+	if err != nil {
+		return nil, err
+	}
 	result := []json.RawMessage{}
 	json.Unmarshal(data.Response, &result)
-	return result
+	return result, nil
 }
 
-//Gets a list of posts from a blog.
+//Posts retrieves a list of posts from a blog.
 //blogname: the name of the blog you want to get posts from (e.g. mgterzieva.tumblr.com).
 //postsType: the type of the posts you want to get
 //(e.g. text, quote, link, answer, video, audio, photo, chat, all).
@@ -131,116 +137,143 @@ func (trc *TumblrRestClient) Tagged(tag string, options map[string]string) []jso
 //limit: the number of posts to return;
 //offset: the number of the post you want to start from;
 //filter: return only posts with a specific format(e.g. html, text, raw).
-func (trc *TumblrRestClient) Posts(blogname, postsType string, options map[string]string) PostsResponse {
-	var requestUrl string
+func (trc *TumblrRestClient) Posts(blogname, postsType string, options map[string]string) (*PostsResponse, error) {
+	var requestURL string
 	if postsType == "" {
-		requestUrl = fmt.Sprintf("/v2/blog/%s/posts", blogname)
+		requestURL = fmt.Sprintf("/v2/blog/%s/posts", blogname)
 	} else {
-		requestUrl = fmt.Sprintf("/v2/blog/%s/posts/%s", blogname, postsType)
+		requestURL = fmt.Sprintf("/v2/blog/%s/posts/%s", blogname, postsType)
 	}
 	options["api_key"] = trc.request.apiKey
-	data := trc.request.Get(requestUrl, options)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result PostsResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets general information about the blog.
+//BlogInfo retrieves general information about the blog.
 //blogname: name of the blog you want to get information about(e.g. mgterzieva.tumblr.com).
-func (trc *TumblrRestClient) BlogInfo(blogname string) BlogInfoResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/info", blogname)
+func (trc *TumblrRestClient) BlogInfo(blogname string) (*BlogInfoResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/info", blogname)
 	options := map[string]string{"api_key": trc.request.apiKey}
-	data := trc.request.Get(requestUrl, options)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result BlogInfoResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets the followers of the blog given.
+//Followers retrieves the followers of the blog given.
 //blogname: name of the blog whose followers you want to get.
 //optons can be:
 //limit: the number of results to return, inclusive;
 //offset: result to start at.
-func (trc *TumblrRestClient) Followers(blogname string, options map[string]string) FollowersResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/followers", blogname)
-	data := trc.request.Get(requestUrl, options)
+func (trc *TumblrRestClient) Followers(blogname string, options map[string]string) (*FollowersResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/followers", blogname)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result FollowersResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets the likes of blog given.
+//BlogLikes retrieves the likes of blog given.
 //blogname: name of the blog whose likes you want to get.
 //options can be:
 //limit: how many likes do you want to get;
 //offset: the number of the like you want to start from.
-func (trc *TumblrRestClient) BlogLikes(blogname string, options map[string]string) LikesResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/likes", blogname)
+func (trc *TumblrRestClient) BlogLikes(blogname string, options map[string]string) (*LikesResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/likes", blogname)
 	options["api_key"] = trc.request.apiKey
-	data := trc.request.Get(requestUrl, options)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result LikesResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets posts that are currently in the blog's queue.
+//Queue retrieves posts that are currently in the blog's queue.
 //options can be:
 //limit: the number of results to return;
 //offset: post number to start at;
 //filter: specify posts' format(e.g. format="html", format="text", format="raw").
-func (trc *TumblrRestClient) Queue(blogname string, options map[string]string) DraftsResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/posts/queue", blogname)
-	data := trc.request.Get(requestUrl, options)
+func (trc *TumblrRestClient) Queue(blogname string, options map[string]string) (*DraftsResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/posts/queue", blogname)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Gets posts that are currently in the blog's drafts.
+//Drafts retrieves posts that are currently in the blog's drafts.
 //options can be:
 //filter: specify posts' format(e.g. format="html", format="text", format="raw").
-func (trc *TumblrRestClient) Drafts(blogname string, options map[string]string) DraftsResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/posts/draft", blogname)
-	data := trc.request.Get(requestUrl, options)
+func (trc *TumblrRestClient) Drafts(blogname string, options map[string]string) (*DraftsResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/posts/draft", blogname)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Retrieve submission posts.
+//Submission retrieves submission posts.
 //options can be:
 //offset: post number to start at;
 //filter: specify posts' format(e.g. format="html", format="text", format="raw").
-func (trc *TumblrRestClient) Submission(blogname string, options map[string]string) DraftsResponse {
-	requestUrl := fmt.Sprintf("/v2/blog/%s/posts/submission", blogname)
-	data := trc.request.Get(requestUrl, options)
+func (trc *TumblrRestClient) Submission(blogname string, options map[string]string) (*DraftsResponse, error) {
+	requestURL := fmt.Sprintf("/v2/blog/%s/posts/submission", blogname)
+	data, err := trc.request.Get(requestURL, options)
+	if err != nil {
+		return nil, err
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
-	return result
+	return &result, nil
 }
 
-//Follow the url of a given blog.
+//Follow a blog via a URL
 //blogname: the url of the blog to follow.
-func (trc *TumblrRestClient) Follow(blogname string) error {
-	requestUrl := fmt.Sprintf("/v2/user/follow")
+func (trc *TumblrRestClient) Follow(blogname string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/user/follow")
 	params := map[string]string{"url": blogname}
-	data := trc.request.Post(requestUrl, params)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, params)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
-//Unfollow the url of a given blog.
+//Unfollow a blog via a URL
 //blogname: the url of the blog to unfollow.
-func (trc *TumblrRestClient) Unfollow(blogname string) error {
-	requestUrl := fmt.Sprintf("/v2/user/unfollow")
+func (trc *TumblrRestClient) Unfollow(blogname string) (bool, error) {
+	requestURL := fmt.Sprintf("/v2/user/unfollow")
 	params := map[string]string{"url": blogname}
-	data := trc.request.Post(requestUrl, params)
-	if data.Meta.Status != 200 {
-		return errors.New(data.Meta.Msg)
+	data, err := trc.request.Post(requestURL, params)
+	if err != nil {
+		return false, err
 	}
-	return nil
+	if data.Meta.Status != 200 {
+		return false, errors.New(data.Meta.Msg)
+	}
+	return true, nil
 }
 
 //Like post of a given blog.
