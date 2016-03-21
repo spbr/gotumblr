@@ -72,6 +72,9 @@ func (trc *TumblrRestClient) Likes(options map[string]string) (*LikesResponse, e
 	if err != nil {
 		return nil, err
 	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
+	}
 	var result LikesResponse
 	json.Unmarshal(data.Response, &result)
 	return &result, nil
@@ -85,6 +88,9 @@ func (trc *TumblrRestClient) Following(options map[string]string) (*FollowingRes
 	data, err := trc.request.Get("/v2/user/following", options)
 	if err != nil {
 		return nil, err
+	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
 	}
 	var result FollowingResponse
 	json.Unmarshal(data.Response, &result)
@@ -104,6 +110,9 @@ func (trc *TumblrRestClient) Dashboard(options map[string]string) (*DraftsRespon
 	if err != nil {
 		return nil, err
 	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
 	return &result, nil
@@ -121,6 +130,9 @@ func (trc *TumblrRestClient) Tagged(tag string, options map[string]string) ([]js
 	data, err := trc.request.Get("/v2/tagged", options)
 	if err != nil {
 		return nil, err
+	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
 	}
 	result := []json.RawMessage{}
 	json.Unmarshal(data.Response, &result)
@@ -148,6 +160,9 @@ func (trc *TumblrRestClient) Posts(blogname, postsType string, options map[strin
 	data, err := trc.request.Get(requestURL, options)
 	if err != nil {
 		return nil, err
+	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
 	}
 	var result PostsResponse
 	json.Unmarshal(data.Response, &result)
@@ -179,6 +194,9 @@ func (trc *TumblrRestClient) Followers(blogname string, options map[string]strin
 	if err != nil {
 		return nil, err
 	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
+	}
 	var result FollowersResponse
 	json.Unmarshal(data.Response, &result)
 	return &result, nil
@@ -196,6 +214,9 @@ func (trc *TumblrRestClient) BlogLikes(blogname string, options map[string]strin
 	if err != nil {
 		return nil, err
 	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
+	}
 	var result LikesResponse
 	json.Unmarshal(data.Response, &result)
 	return &result, nil
@@ -212,6 +233,9 @@ func (trc *TumblrRestClient) Queue(blogname string, options map[string]string) (
 	if err != nil {
 		return nil, err
 	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
+	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
 	return &result, nil
@@ -225,6 +249,9 @@ func (trc *TumblrRestClient) Drafts(blogname string, options map[string]string) 
 	data, err := trc.request.Get(requestURL, options)
 	if err != nil {
 		return nil, err
+	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
 	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
@@ -240,6 +267,9 @@ func (trc *TumblrRestClient) Submission(blogname string, options map[string]stri
 	data, err := trc.request.Get(requestURL, options)
 	if err != nil {
 		return nil, err
+	}
+	if data.Meta.Status != 200 {
+		return nil, errors.New(data.Meta.Msg)
 	}
 	var result DraftsResponse
 	json.Unmarshal(data.Response, &result)
